@@ -11,6 +11,10 @@
     <name>Soap logger Spring Boot starter</name>
     <url>http://www.example.com</url>
 
+    <scm>
+        <url>https://github.com/kodgemisi/soap-logger-spring-boot-starter</url>
+    </scm>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
