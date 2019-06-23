@@ -4,9 +4,9 @@ import com.sun.xml.ws.transport.http.client.HttpTransportPipe;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Optional;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(SoapLoggerProperties.class)
-@ConditionalOnClass(com.sun.xml.ws.transport.http.HttpAdapter.class)
+@Conditional(OnSoapClientExistsCondition.class)
 public class SoapLoggerAutoConfiguration {
 
 	/**
