@@ -5,12 +5,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 
 class OnSoapClientExistsCondition extends AnyNestedCondition {
 
+	static final String HTTP_ADAPTER_JAVA_8 = "com.sun.xml.ws.transport.http.HttpAdapter";
+
+	static final String HTTP_ADAPTER_JAVA_11 = "com.sun.xml.internal.ws.transport.http.HttpAdapter";
+
 	OnSoapClientExistsCondition() {
 		super(ConfigurationPhase.REGISTER_BEAN);
 	}
 
 	// This class is a part of Java runtime 8
-	@ConditionalOnClass(name = "com.sun.xml.internal.ws.transport.http.HttpAdapter")
+	@ConditionalOnClass(name = HTTP_ADAPTER_JAVA_11)
 	static class OnJava8 {
 
 	}
@@ -23,7 +27,7 @@ class OnSoapClientExistsCondition extends AnyNestedCondition {
 	 *  <artifactId>rt</artifactId>
 	 * </pre>
 	 */
-	@ConditionalOnClass(name = "com.sun.xml.ws.transport.http.HttpAdapter")
+	@ConditionalOnClass(name = HTTP_ADAPTER_JAVA_8)
 	static class OnJava11 {
 
 	}

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,10 +48,9 @@ public class SoapLoggerAutoConfiguration {
 			LOGGER.setLevel(Level.FINER); // The level have to be FINER in order the dump to work!
 			LOGGER.addHandler(handler);
 
-			// https://github.com/javaee/metro-jax-ws/issues/1237#issuecomment-439302776
-			System.setProperty("javax.xml.soap.SAAJMetaFactory", "com.sun.xml.messaging.saaj.soap.SAAJMetaFactoryImpl");
-
-			com.sun.xml.ws.transport.http.HttpAdapter.dump_threshold = properties.getDumpThreshold();
+			final Class<?> aClass = getHttpAdapterClass();
+			final Field field = aClass.getField("dump_threshold");
+			field.set(null, properties.getDumpThreshold());
 
 			log.trace("WS Logger is configured with following configuration: handler -> {} properties: {}", handler.getClass().getCanonicalName(), properties);
 		};
@@ -58,6 +58,22 @@ public class SoapLoggerAutoConfiguration {
 
 	private WsLogHandler wsLogHandler() {
 		return properties.isUseTandemLogger() ? new WsRequestResponseTandemLogger() : new WsLogHandler();
+	}
+
+	private Class<?> getHttpAdapterClass() {
+		try {
+			return Class.forName("com.sun.xml.internal.ws.transport.http.HttpAdapter");
+		}
+		catch (ClassNotFoundException e) {
+			try {
+				// https://github.com/javaee/metro-jax-ws/issues/1237#issuecomment-439302776
+				System.setProperty("javax.xml.soap.SAAJMetaFactory", "com.sun.xml.messaging.saaj.soap.SAAJMetaFactoryImpl");
+				return Class.forName("com.sun.xml.ws.transport.http.HttpAdapter");
+			}
+			catch (ClassNotFoundException ex) {
+				throw new IllegalStateException("Neither com.sun.xml.ws.transport.http.HttpAdapter nor com.sun.xml.internal.ws.transport.http.HttpAdapter class is on the classpath!");
+			}
+		}
 	}
 
 }
