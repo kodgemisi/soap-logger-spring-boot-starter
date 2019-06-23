@@ -1,0 +1,90 @@
+:toc: left
+:icons: font
+:nofooter:
+:source-highlighter: coderay
+:docinfo: shared,private
+
+= SOAP Request/Response Logger
+
+== Introduction
+
+This is a `Spring Boot Starter` project which provides request/response logging for SOAP client applications.
+
+== Example Log
+
+```
+2019-06-23 18:01:26.169  INFO 13567 --- [nio-8080-exec-5] c.k.s.WsRequestResponseTandemLogger      : Request: ---[HTTP request - https://tckimlik.nvi.gov.tr/Service/KPSPublic.asmx]---
+Accept: text/xml, multipart/related
+Content-Type: text/xml; charset=utf-8
+SOAPAction: "http://tckimlik.nvi.gov.tr/WS/TCKimlikNoDogrula"
+User-Agent: JAX-WS RI 2.3.1 svn-revision#6ef5f7eb9a938dbc4562f25f8fa0b67cc4ff2dbb
+<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><TCKimlikNoDogrula xmlns="http://tckimlik.nvi.gov.tr/WS"><TCKimlikNo>12345678901</TCKimlikNo><Ad>DORUK DESTAN</Ad><Soyad>SARPKAYA</Soyad><DogumYili>1988</DogumYili></TCKimlikNoDogrula></S:Body></S:Envelope>--------------------
+
+
+Response: ---[HTTP response - https://tckimlik.nvi.gov.tr/Service/KPSPublic.asmx - 200]---
+null: HTTP/1.1 200 OK
+Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept
+Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
+Cache-Control: private, max-age=0
+Content-Length: 395
+Content-Security-Policy: default-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; img-src 'self' 'unsafe-inline' data:;frame-src https://www.google.com/recaptcha/ https://tckimliktest.nvi.gov.tr https://tckimlik.nvi.gov.tr; style-src 'self' 'unsafe-inline'
+Content-Type: text/xml; charset=utf-8
+Date: Sun, 23 Jun 2019 15:01:26 GMT
+Referer-Policy: no-referer
+Set-Cookie: TS01326bb0=0179b2ce45b6e8a0698f15b757826f4f5773cf1d2e015ebdfd2cd80c3a8ec9d2a5cd26f2e1e40b039bb297a7293936869d4c1bf22d; Path=/; Domain=.tckimlik.nvi.gov.tr
+Strict-Transport-Security: max-age=16070400;includeSubDomains
+X-Content-Type-Options: nosniff
+X-FRAME-OPTIONS: SAMEORIGIN
+X-FRAME-OPTIONS: SAMEORIGIN
+X-XSS-Protection: 1;mode=block
+<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><TCKimlikNoDogrulaResponse xmlns="http://tckimlik.nvi.gov.tr/WS"><TCKimlikNoDogrulaResult>false</TCKimlikNoDogrulaResult></TCKimlikNoDogrulaResponse></soap:Body></soap:Envelope>--------------------
+```
+
+== Quick Start
+
+Just add the dependency to your maven/gradle of your Spring Boot application then it will autoconfigure itself and _SOAP Logger_ will be available for all of your SOAP calls.
+
+**Adding the dependency to your project**
+
+```xml
+<dependencies>
+  <dependency>
+    <groupId>com.github.kodgemisi</groupId>
+    <artifactId>soap-logger-spring-boot-starter</artifactId>
+    <version>${soap-logger-spring-boot-starter.version}</version>
+  </dependency>
+</dependencies>
+
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+```
+
+See https://jitpack.io/#kodgemisi/soap-logger-spring-boot-starter for Jitpack usage, dependency details, version info and Gradle usage.
+
+== Configuration
+
+```yaml
+soap-logger:
+  dump-threshold: <String> # log size in bytes Default value: 1024000 (1mib)
+  use-tandem-logger: <boolean> # Logs request and response in the same log row. Default value: false
+```
+
+== Limitations
+
+* Only for SOAP clients. On SOAP servers may or may not work.
+
+== License
+
+© Copyright 2018 Kod Gemisi Ltd.
+
+Mozilla Public License 2.0 (MPL-2.0)
+
+link:https://tldrlegal.com/license/mozilla-public-license-2.0-(mpl-2)[]
+
+MPL is a copyleft license that is easy to comply with. You must make the source code for any of your changes available under MPL, but you can combine the MPL software with proprietary code, as long as you keep the MPL code in separate files. Version 2.0 is, by default, compatible with LGPL and GPL version 2 or greater. You can distribute binaries under a proprietary license, as long as you make the source available under MPL.
+
+https://www.mozilla.org/en-US/MPL/2.0/[See Full License Here]
