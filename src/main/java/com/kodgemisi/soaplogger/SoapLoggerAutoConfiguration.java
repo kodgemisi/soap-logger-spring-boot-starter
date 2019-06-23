@@ -1,6 +1,5 @@
 package com.kodgemisi.soaplogger;
 
-import com.sun.xml.ws.transport.http.client.HttpTransportPipe;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -33,7 +32,7 @@ public class SoapLoggerAutoConfiguration {
 	 *
 	 * @see <a href="https://stackoverflow.com/a/43544608/878361">https://stackoverflow.com/a/43544608/878361</a>
 	 */
-	private static final Logger LOGGER = Logger.getLogger(HttpTransportPipe.class.getName());
+	private static Logger LOGGER;
 
 	private final SoapLoggerProperties properties;
 
@@ -44,13 +43,13 @@ public class SoapLoggerAutoConfiguration {
 		return args -> {
 			log.debug("Configuring WS Logger...");
 
-			final WsLogHandler handler = wsLogHandler.orElse(wsLogHandler());
-			LOGGER.setLevel(Level.FINER); // The level have to be FINER in order the dump to work!
-			LOGGER.addHandler(handler);
-
 			final Class<?> aClass = getHttpAdapterClass();
 			final Field field = aClass.getField("dump_threshold");
 			field.set(null, properties.getDumpThreshold());
+
+			final WsLogHandler handler = wsLogHandler.orElse(wsLogHandler());
+			LOGGER.setLevel(Level.FINER); // The level have to be FINER in order the dump to work!
+			LOGGER.addHandler(handler);
 
 			log.trace("WS Logger is configured with following configuration: handler -> {} properties: {}", handler.getClass().getCanonicalName(), properties);
 		};
@@ -62,12 +61,17 @@ public class SoapLoggerAutoConfiguration {
 
 	private Class<?> getHttpAdapterClass() {
 		try {
+			// Comes from Java 8 rt.jar
+			//System.setProperty("com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump", "true");
+			LOGGER = Logger.getLogger("com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe");
 			return Class.forName("com.sun.xml.internal.ws.transport.http.HttpAdapter");
 		}
 		catch (ClassNotFoundException e) {
 			try {
 				// https://github.com/javaee/metro-jax-ws/issues/1237#issuecomment-439302776
 				System.setProperty("javax.xml.soap.SAAJMetaFactory", "com.sun.xml.messaging.saaj.soap.SAAJMetaFactoryImpl");
+				//System.setProperty("com.sun.xml.ws.transport.http.HttpTransportPipe.dump", "true");
+				LOGGER = Logger.getLogger("com.sun.xml.ws.transport.http.HttpTransportPipe");
 				return Class.forName("com.sun.xml.ws.transport.http.HttpAdapter");
 			}
 			catch (ClassNotFoundException ex) {
